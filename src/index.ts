@@ -1,10 +1,19 @@
 import { Hono } from 'hono'
 
 const app = new Hono()
+//creating middleware
+app.get('/', async (c: any) => {
+  return c.text('Running...')
+})
 
-
-
-app.get('/signin', async (c) => {
+async function authMiddleware(c: any, next: any) {
+  if (c.req.header("Authorization")) {
+    await next();
+  } else {
+    c.text("You dont have access")
+  }
+}
+app.get('/signin', authMiddleware, async (c) => {
   const body = await c.req.json();
   console.log(body);
 
